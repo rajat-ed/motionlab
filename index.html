@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MotionLab by Rajat</title>
     <style>
-        /* ==========================================================================
-           PhET OPTIMIZED COMPACT THEME & MAX VIEW LAYOUT ENGINE
-           ========================================================================== */
+
         :root {
             --phet-header-bg: #002244;
             --phet-workspace-bg: #223344;
@@ -379,11 +377,9 @@
 
     <div class="app-workspace">
         
-        <!-- LEFT SIMULATION VIEWPORT -->
         <main class="simulation-viewport">
             
             <div class="tracks-wrapper single-mode" id="tracks-container-wrapper">
-                <!-- Track A -->
                 <div class="track-window" id="track-window-a">
                     <div class="track-title-tag id-tag-a" id="tag-track-a">Track System</div>
                     <div class="ghost-path-container" id="ghost-container-a"></div>
@@ -393,7 +389,6 @@
                     <div class="actor-token" id="actor-a">⚽</div>
                 </div>
 
-                <!-- Track B -->
                 <div class="track-window hidden" id="track-window-b">
                     <div class="track-title-tag">Track B</div>
                     <div class="ghost-path-container" id="ghost-container-b"></div>
@@ -404,7 +399,6 @@
                 </div>
             </div>
 
-            <!-- Electronic Readout Matrix Dashboard -->
             <div class="dashboard-matrix" id="dashboard-container">
                 <div class="relative-panel-header hidden" id="rel-header-panel">
                     Relative Velocity (v<sub>A/B</sub> = v<sub>A</sub> - v<sub>B</sub>): <span id="ds-vrel">0.00</span> m/s
@@ -430,7 +424,6 @@
             
         </main>
 
-        <!-- RIGHT CONTROL PANEL POD -->
         <aside class="controls-panel">
             <h2>Lab Mode</h2>
             <div class="control-group-box" style="padding:4px; display:flex; gap:4px;">
@@ -440,7 +433,6 @@
 
             <h2>Setup Pod</h2>
             
-            <!-- CONTROLS CONTAINER: STANDARD ENVIRONMENT -->
             <div id="panel-std-controls">
                 <div class="control-group-box" style="margin-bottom:8px;">
                     <label>Subject:</label>
@@ -458,7 +450,6 @@
                 </div>
             </div>
 
-            <!-- CONTROLS CONTAINER: RELATIVE ENVIRONMENT -->
             <div id="panel-rel-controls" class="hidden">
                 <div class="control-group-box" style="margin-bottom:8px;">
                     <div class="segment-title">Subject A Configuration</div>
@@ -522,15 +513,14 @@
             currentVelocity: 0.0,
             currentAcceleration: 0.0,
             
-            // Relative mode parameters configuration entries
             posA: 0.0,
             posB: 0.0,
             velA: 0.0,
             velB: 0.0,
-            startPosA: 0.0, // Custom initialization configuration tracking variables via drag drops
-            startPosB: 40.0,
+            startPosA: 10.0, 
+            startPosB: 45.0,
             relativeWindowDistance: 60.0,
-            relativeDuration: 12.0,
+            relativeDuration: 10.0,
             
             totalDistance: 0.0,
             totalDuration: 0.0,
@@ -634,19 +624,17 @@
                 DOM.tagTrackA.textContent = "Track A";
                 DOM.relHeaderPanel.classList.remove('hidden');
                 
-                // Hide position elements and restructure dashboard grids per requirements layout fixes
                 DOM.dashboardContainer.classList.add('relative-layout-active');
-                DOM.cellMid1.classList.add('hidden'); // Excludes Distance/Position output components fields
+                DOM.cellMid1.classList.add('hidden'); 
                 
                 DOM.lblMid2.textContent = "Velocity A";
                 DOM.lblEnd.textContent = "Velocity B";
                 
                 DOM.unV.textContent = "m/s";
-                DOM.unA.textContent = "m/s"; // Patched unit metrics fields configuration alignments labels
+                DOM.unA.textContent = "m/s"; 
                 
                 DOM.inputsDeck.classList.add('hidden');
                 
-                // Reset custom coordinate alignments defaults parameters
                 State.startPosA = 10.0;
                 State.startPosB = 45.0;
                 
@@ -664,7 +652,7 @@
             DOM.inputsDeck.innerHTML = '';
 
             for (let i = 0; i < count; i++) {
-                const old = preservedData[i] || { d: 10 * (i + 1), t: 5, accel: false, u: 0, v: 10 };
+                const old = preservedData[i] || { d: 10 * (i + 1), t: 5, accel: false, a: 2 };
                 const card = document.createElement('div');
                 card.className = 'segment-card';
                 card.dataset.idx = i;
@@ -686,14 +674,9 @@
                         <input type="checkbox" class="val-chk" ${old.accel ? 'checked' : ''}> Accelerate
                     </label>
                     <div class="input-row accel-fields ${old.accel ? '' : 'hidden'}" style="margin-top: 4px;">
-                        <div>
-                            <label>Init u</label>
-                            <input type="number" class="val-u" step="any" value="${old.u}">
-                            <span class="inline-err hidden" id="err-u-${i}"></span>
-                        </div>
-                        <div>
-                            <label>Final v</label>
-                            <input type="number" class="val-v" step="any" value="${old.v}">
+                        <div style="grid-column: span 2;">
+                            <label>Acceleration (m/s²)</label>
+                            <input type="number" class="val-a" step="any" value="${old.a}">
                             <span class="inline-err hidden" id="err-acc-${i}"></span>
                         </div>
                     </div>
@@ -720,8 +703,7 @@
                 d: parseFloat(card.querySelector('.val-d').value),
                 t: parseFloat(card.querySelector('.val-t').value),
                 accel: card.querySelector('.val-chk').checked,
-                u: parseFloat(card.querySelector('.val-u').value) || 0,
-                v: parseFloat(card.querySelector('.val-v').value) || 0
+                a: parseFloat(card.querySelector('.val-a').value) || 0
             }));
         }
 
@@ -738,9 +720,6 @@
                 State.velB = parseFloat(DOM.valRelVB.value) || 0;
                 State.totalDistance = State.relativeWindowDistance;
                 State.totalDuration = State.relativeDuration;
-                
-                State.posA = State.startPosA;
-                State.posB = State.startPosB;
                 return true;
             }
 
@@ -776,38 +755,37 @@
                     segPhysics.v = constantV;
                     segPhysics.a = 0;
                 } else {
-                    if (isNaN(input.u) || input.u < 0) {
+                    if (isNaN(input.a)) {
                         checksPassed = false;
-                        if (!suppressErrors) document.getElementById(`err-u-${idx}`).textContent = "Must be ≥ 0", document.getElementById(`err-u-${idx}`).classList.remove('hidden');
-                    }
-                    if (isNaN(input.v) || input.v < 0) {
-                        checksPassed = false;
-                        if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Must be ≥ 0", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
+                        if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Invalid entry", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
                     }
 
-                    segPhysics.u = input.u;
-                    segPhysics.v = input.v;
+                    segPhysics.u = (idx > 0) ? State.segments[idx - 1].v : 0;
+                    segPhysics.a = input.a;
 
-                    if (segPhysics.d > 0) {
-                        segPhysics.a = (Math.pow(input.v, 2) - Math.pow(input.u, 2)) / (2 * segPhysics.d);
+                    const vSquared = Math.pow(segPhysics.u, 2) + 2 * segPhysics.a * segPhysics.d;
+                    if (vSquared < 0) {
+                        checksPassed = false;
+                        if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Impossible motion (v² < 0)", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
+                        segPhysics.v = 0;
+                        segPhysics.t = 1;
                     } else {
-                        segPhysics.a = 0;
-                    }
-
-                    if (Math.abs(segPhysics.a) < 1e-6) {
-                        if (segPhysics.u === 0) {
-                            checksPassed = false;
-                            if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Static (u=0, v=0)", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
-                            segPhysics.t = 1;
+                        segPhysics.v = Math.sqrt(vSquared);
+                        if (Math.abs(segPhysics.a) < 1e-6) {
+                            if (segPhysics.u === 0) {
+                                checksPassed = false;
+                                if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Static (u=0, a=0)", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
+                                segPhysics.t = 1;
+                            } else {
+                                segPhysics.t = segPhysics.d / segPhysics.u;
+                            }
                         } else {
-                            segPhysics.t = segPhysics.d / segPhysics.u;
-                        }
-                    } else {
-                        segPhysics.t = (segPhysics.v - segPhysics.u) / segPhysics.a;
-                        
-                        if (segPhysics.t <= 0) {
-                            checksPassed = false;
-                            if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Vector error", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
+                            segPhysics.t = (segPhysics.v - segPhysics.u) / segPhysics.a;
+                            if (segPhysics.t <= 0 || isNaN(segPhysics.t)) {
+                                checksPassed = false;
+                                if (!suppressErrors) document.getElementById(`err-acc-${idx}`).textContent = "Direction error", document.getElementById(`err-acc-${idx}`).classList.remove('hidden');
+                                segPhysics.t = 1;
+                            }
                         }
                     }
                 }
@@ -899,6 +877,7 @@
         function triggerRepaintCycle() {
             compileKinematicsTrajectory(true);
             rebuildVisualScaleSystem();
+            computeInstantaneousKinematics(State.elapsedTime);
             repaintActorPositionFrame();
         }
 
@@ -913,7 +892,6 @@
                 DOM.dsV.textContent = State.currentVelocity.toFixed(2);
                 DOM.dsA.textContent = State.currentAcceleration.toFixed(2);
             } else {
-                // Sinks values arrays targeting only velocities markers outputs configurations matrices
                 DOM.dsV.textContent = State.velA.toFixed(2); 
                 DOM.dsA.textContent = State.velB.toFixed(2); 
                 
@@ -947,12 +925,17 @@
             State.elapsedTime += (deltaMs / 1000) * State.speedFactor;
 
             if (State.elapsedTime >= State.totalDuration) {
-                State.elapsedTime = State.totalDuration;
-                computeInstantaneousKinematics(State.elapsedTime);
-                updateTelemetryDashboard();
-                repaintActorPositionFrame();
-                handleSimulationCompletion();
-                return;
+                if (State.currentMode === 'relative') {
+                    // Correct mathematical wrap-around behavior for perfect infinite loops
+                    State.elapsedTime = State.elapsedTime % State.totalDuration;
+                } else {
+                    State.elapsedTime = State.totalDuration;
+                    computeInstantaneousKinematics(State.elapsedTime);
+                    updateTelemetryDashboard();
+                    repaintActorPositionFrame();
+                    handleSimulationCompletion();
+                    return;
+                }
             }
 
             computeInstantaneousKinematics(State.elapsedTime);
@@ -964,9 +947,12 @@
 
         function computeInstantaneousKinematics(currentTimePoint) {
             if (State.currentMode === 'relative') {
-                // Evaluate positions linearly relative to their starting coordinate parameters
-                State.posA = State.startPosA + (State.velA * currentTimePoint);
-                State.posB = State.startPosB + (State.velB * currentTimePoint);
+                // Correctly track track wrapping loops cleanly based on the original starting positions
+                State.posA = (State.startPosA + (State.velA * currentTimePoint)) % State.relativeWindowDistance;
+                State.posB = (State.startPosB + (State.velB * currentTimePoint)) % State.relativeWindowDistance;
+                
+                if (State.posA < 0) State.posA += State.relativeWindowDistance;
+                if (State.posB < 0) State.posB += State.relativeWindowDistance;
                 return;
             }
 
@@ -1023,11 +1009,9 @@
                 if (!activeDraggedActor) return;
                 if (e.cancelable) e.preventDefault();
 
-                // Compute bounding box metrics mapping pointers positions to scalar track percentages
                 const targetTrack = activeDraggedActor === 'A' ? DOM.trackWindowA : DOM.trackWindowB;
                 const boundingBox = targetTrack.getBoundingClientRect();
                 
-                // Align relative inner track scale bounds (4% left to 96% right margins padding)
                 const innerTrackLeft = boundingBox.left + (boundingBox.width * 0.04);
                 const innerTrackWidth = boundingBox.width * 0.92;
                 
@@ -1066,7 +1050,6 @@
 
                 State.isRunning = true;
                 State.isPaused = false;
-                State.elapsedTime = 0;
                 State.lastTimestamp = performance.now();
 
                 freezeFormControls(true);
